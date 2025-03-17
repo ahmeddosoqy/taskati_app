@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:taskati_app/core/model/task_model.dart';
 import 'package:taskati_app/core/services/local_storage.dart';
-import 'package:taskati_app/core/utills/app_colors.dart';
-import 'package:taskati_app/core/utills/text_style.dart';
+import 'package:taskati_app/core/utills/themes.dart';
 import 'package:taskati_app/features/intro/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  await Hive.openBox("userBox");
+  Hive.registerAdapter(TaskModelAdapter());
+  await Future.wait([
+    Hive.openBox("userBox"),
+    Hive.openBox<TaskModel>("taskBox"),
+  ]);
   LocalStorage.init();
   runApp(const MainApp());
 }
@@ -18,31 +22,19 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: "Poppins",
-        inputDecorationTheme: InputDecorationTheme(
-          hintStyle: getSmallStyle(),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(width: 5.0, color: AppColors.primaryColor),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(width: 5.0, color: AppColors.primaryColor),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(width: 5.0, color: AppColors.pinkColor),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(width: 5.0, color: AppColors.pinkColor),
-          ),
-        ),
-      ),
-      home: SplashScreen(),
+    return ValueListenableBuilder(
+      valueListenable: LocalStorage.userBox!.listenable(),
+      builder: (context, box, child) {
+        bool isdarkTheme =
+            LocalStorage.getData(LocalStorage.isdarkTheme) ?? false;
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          themeMode: isdarkTheme ? ThemeMode.dark : ThemeMode.light,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          home: SplashScreen(),
+        );
+      },
     );
   }
 }

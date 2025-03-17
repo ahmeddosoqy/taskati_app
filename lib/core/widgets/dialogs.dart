@@ -7,7 +7,10 @@ showErrorText(BuildContext context, String messege) {
     SnackBar(
       duration: Duration(seconds: 3),
       backgroundColor: AppColors.pinkColor,
-      content: Text(messege, style: getBodyStyle(color: AppColors.whiteColor)),
+      content: Text(
+        messege,
+        style: getBodyStyle(context, color: AppColors.whiteColor),
+      ),
     ),
   );
 }

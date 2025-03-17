@@ -8,7 +8,7 @@ import 'package:taskati_app/core/utills/app_colors.dart';
 import 'package:taskati_app/core/utills/text_style.dart';
 import 'package:taskati_app/core/widgets/custom_button.dart';
 import 'package:taskati_app/core/widgets/dialogs.dart';
-import 'package:taskati_app/features/intro/home/page/home_screen.dart';
+import 'package:taskati_app/features/intro/home/pages/home_screen.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -28,16 +28,20 @@ class _LoginPageState extends State<LoginPage> {
           TextButton(
             onPressed: () {
               if (path != null && nameController.text.isNotEmpty) {
-                LocalStorage.cacheData("name", nameController.text);
-                LocalStorage.cacheData("image", path);
-                context.pushTo(HomeScreen());
+                LocalStorage.cacheData(
+                  LocalStorage.namekey,
+                  nameController.text,
+                );
+                LocalStorage.cacheData(LocalStorage.imagekey, path);
+                LocalStorage.cacheData(LocalStorage.isUploaded, true);
+                context.pushReplacment(HomeScreen());
               } else {
                 showErrorText(context, "Please Provide both Name and image ");
               }
             },
             child: Text(
               "Done",
-              style: getBodyStyle(color: AppColors.primaryColor),
+              style: getTitleStyle(context, color: AppColors.primaryColor),
             ),
           ),
         ],
